@@ -1,3 +1,28 @@
+{{--
+*Part 2:
+* Model Query in Blade Template:
+  Using App\Models\Product::all() to retrieve Products is not a recommended practice.
+  Instead, you should pass the Products data from your Controller to the Blade template.
+  It's more efficient and follows the MVC pattern.
+
+* Input Validation for Form Fields:
+  You should consider adding validation rules to your form fields. 
+  For example, you can use the required and max rules for the "name" field.
+  This will help ensure data integrity and security.
+
+* Displaying HTML Tags:
+  Using {!! $product->name !!} outputs data without escaping it.
+  If Product Names contain HTML or script tags, it could potentially lead to a Cross-Site Scripting (XSS) vulnerability.
+  You should use {{ $product->name) }} to escape the any HTML or special characters within the variable.
+
+* Error Handling:
+  Consider adding error handling to your form submissions.
+  If there's an error during form submission (e.g., database insert fails), you should provide feedback to the user.
+
+* Consider Using Named Routes:
+  Instead of hardcoding URLs in your forms, consider using named routes for better maintainability.
+--}}
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -11,21 +36,38 @@
             color: green;
         }
 
+        .alert-danger {
+            color: red;
+        }
+
     </style>
 </head>
 <body>
 
 <h1>Current Products</h1>
 
-@if (\App\Models\Product::all()->count())
+<!-- Products from ProductController -->
+@if ($products->count())
     <ul>
-        @foreach (\App\Models\Product::all() as $product)
+        @foreach ($products as $product)
             <li>
-                {!! $product->name !!}
-                <form action="/products/delete" method="POST">
+                <strong>Name:</strong> {{ $product->name }}<br>
+                <strong>Description:</strong> {{ $product->description }}<br>
+                <strong>Tags:</strong>
+                @if ($product->tags->count() > 0)
+                    <ul>
+                        @foreach ($product->tags as $tag)
+                            <li>{{ $tag->name }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    No tags assigned.
+                @endif
+                <!-- Use Named Route -->
+                <form action="{{ route('products.destroy', $product) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="id" value="@php(print $product->id)"/>
-                    <button type="submit">delete</button>
+                    @method('DELETE')
+                    <button type="submit">Delete</button>
                 </form>
             </li>
         @endforeach
@@ -34,20 +76,31 @@
     <p><em>No products have been created yet.</em></p>
 @endif
 
-
-
 @if (session('status'))
     <div class="alert-success">
         {{ session('status') }}
     </div>
 @endif
 
+<!-- Display validation errors -->
+@if ($errors->any())
+    <div class="alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <hr />
 
 <h2>New product</h2>
-<form action="/products/new" method="POST">
+<!-- Use Named Route -->
+<form action="{{ route('products.store') }}" method="POST">
     @csrf
-    <input type="text" name="name" placeholder="name" /><br />
+    <!-- Add validation for name -->
+    <input type="text" name="name" placeholder="name" required max=64/><br />
     <textarea name="description" placeholder="description"></textarea><br />
     <input type="text" name="tags" placeholder="tags" /><br />
     <button type="submit">Submit</button>
