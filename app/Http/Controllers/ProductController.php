@@ -20,6 +20,28 @@ use App\Models\Product;
  * Use Named Routes for redirecting. This makes the code more readable and maintainable.
 */
 
+/*
+ * Fix any security issues you notice in the ProductController.
+ * SQL Injection Vulnerability:
+ * The new and delete methods in the original code directly query in the database using SQL queries
+ * without any validation or sanitization of user input.
+ * This leaves your application vulnerable to SQL injection attacks.
+ * To fix this, I used Eloquent instead.
+
+ * No Input Validation:
+ * The original code lacks input validation. It accepts user input without any validation,
+ * which can lead to security vulnerabilities and data integrity issues.
+ * To fix this, I added an input Validation.
+
+ * No Authentication and Authorization:
+ * This might not be applicable in this exam since there is no login and logout function.
+ * But a good addition to this would be to add authentication or authorization checks for create and delete methods.
+
+ * Lack of Route Binding:
+ * The delete method expects an id from the request but doesn't specify where it comes from.
+ * It is better to use route model binding to automatically inject the model based on the URL parameter.
+*/
+
 class ProductController extends Controller
 {
     public function index()
