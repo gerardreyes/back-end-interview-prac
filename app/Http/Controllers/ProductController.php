@@ -51,11 +51,6 @@ class ProductController extends Controller
         return view('products', compact('products'));
     }
 
-    public function create()
-    {
-        return view('products');
-    }
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -68,10 +63,10 @@ class ProductController extends Controller
             Product::create($validatedData);
 
             // Redirect with a success message
-            return redirect(route('products'))->with('status', 'The product was saved');
+            return redirect(route('products.index'))->with('status', 'The product was saved');
         } catch (\Exception $e) {
             // Handle any exceptions that may occur during product creation
-            return redirect(route('products'))->with('error', 'An error occurred while saving the product');
+            return redirect(route('products.index'))->with('error', 'An error occurred while saving the product');
         }
     }
 

@@ -14,5 +14,6 @@ class Product extends Model
      */
     protected $fillable = [
         'name',
+        'description', // Added description as fillable
     ];
 }

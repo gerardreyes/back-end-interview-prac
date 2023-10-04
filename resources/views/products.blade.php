@@ -36,6 +36,10 @@
             color: green;
         }
 
+        .alert-danger {
+            color: red;
+        }
+
     </style>
 </head>
 <body>
@@ -48,6 +52,7 @@
         @foreach ($products as $product)
             <li>
                 {{ $product->name }}
+                {{ $product->description }}
                 <!-- Use Named Route -->
                 <form action="{{ route('products.destroy', $product) }}" method="POST">
                     @csrf
@@ -88,11 +93,6 @@
     @csrf
     <!-- Add validation for name -->
     <input type="text" name="name" placeholder="name" required max=64/><br />
-    <!-- Error handling for name -->
-    @if ($errors->has('name'))
-        <span class="text-danger">{{ $errors->first('name') }}</span>
-    @endif
-    <br />
     <textarea name="description" placeholder="description"></textarea><br />
     <input type="text" name="tags" placeholder="tags" /><br />
     <button type="submit">Submit</button>
