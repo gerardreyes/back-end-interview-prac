@@ -47,7 +47,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $products = Product::with('tags')->get();
 
         return view('products', compact('products'));
     }

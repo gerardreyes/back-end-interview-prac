@@ -51,8 +51,18 @@
     <ul>
         @foreach ($products as $product)
             <li>
-                {{ $product->name }}
-                {{ $product->description }}
+                <strong>Name:</strong> {{ $product->name }}<br>
+                <strong>Description:</strong> {{ $product->description }}<br>
+                <strong>Tags:</strong>
+                @if ($product->tags->count() > 0)
+                    <ul>
+                        @foreach ($product->tags as $tag)
+                            <li>{{ $tag->name }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    No tags assigned.
+                @endif
                 <!-- Use Named Route -->
                 <form action="{{ route('products.destroy', $product) }}" method="POST">
                     @csrf
@@ -65,8 +75,6 @@
 @else
     <p><em>No products have been created yet.</em></p>
 @endif
-
-
 
 @if (session('status'))
     <div class="alert-success">
