@@ -1,4 +1,5 @@
 {{--
+*Part 2:
 * Model Query in Blade Template:
   Using App\Models\Product::all() to retrieve Products is not a recommended practice.
   Instead, you should pass the Products data from your Controller to the Blade template.
@@ -86,7 +87,7 @@
 <form action="{{ route('products.store') }}" method="POST">
     @csrf
     <!-- Add validation for name -->
-    <input type="text" name="name" placeholder="name" required max=255/><br />
+    <input type="text" name="name" placeholder="name" required max=64/><br />
     <!-- Error handling for name -->
     @if ($errors->has('name'))
         <span class="text-danger">{{ $errors->first('name') }}</span>

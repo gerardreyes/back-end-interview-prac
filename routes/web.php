@@ -15,8 +15,12 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-// Use Named routes like ->name('products.index') to make it easier to generate URLs and redirect.
-// Use Route::resource() like Route::delete to define routes in a more concise and RESTful manner.
+/*
+ * Part 1:
+ * Use Named routes like ->name('products.index') to make it easier to generate URLs and redirect.
+
+ * Use Route::resource() like Route::delete to define routes in a more concise and RESTful manner.
+*/
 
 Route::redirect('/', '/products'); // Use Route::redirect() method to handle the root URL redirection.
 
