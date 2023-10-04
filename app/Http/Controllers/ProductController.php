@@ -3,26 +3,56 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+
+/*
+ * Changes:
+ * Use Laravel's built-in ORM, Eloquent instead of Query Builder to interact with the database.
+ * This provides a more expressive and clean way to manage database records.
+
+ * Added Validation by using Laravel's built-in validation system to validate the request data.
+ * This ensures that the Product's Name is required, unique, and within the specified length.
+
+ * Use proper naming conventions for methods like create instead of new to match RESTful resource naming.
+
+ * Instead of delete(Request $request), we can use destroy(Product $product) for type hinting for the Product model.
+
+ * Use Named Routes for redirecting. This makes the code more readable and maintainable.
+*/
 
 class ProductController extends Controller
 {
     public function index()
     {
-        return view('products');
+        $products = Product::all();
+
+        return view('products.index', compact('products'));
     }
 
-    public function new(Request $request)
+    public function create()
     {
-        DB::insert("INSERT INTO products (name) VALUES ('".$request->name."')");
-
-        return redirect('/products')->with('status', 'The product was saved');
+        return view('products.create');
     }
 
-    public function delete(Request $request)
+    public function store(Request $request)
     {
-        DB::delete("DELETE FROM products WHERE id = ".$request->id);
+        $request->validate([
+            'name' => 'required|unique:products|max:255',
+            'description' => 'nullable|string',
+        ]);
 
-        return redirect('/products')->with('status', 'The product was deleted');
+        Product::create([
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+        ]);
+
+        return redirect(route('products.index'))->with('status', 'The product was saved');
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return redirect(route('products.index'))->with('status', 'The product was deleted');
     }
 }
