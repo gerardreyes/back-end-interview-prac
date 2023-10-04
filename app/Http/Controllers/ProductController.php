@@ -63,22 +63,25 @@ class ProductController extends Controller
         try {
             // Create the product if validation passes
             $product = Product::create($validatedData);
-    
+
             // Handle tags
             if ($request->has('tags')) {
                 $tags = explode(',', $request->input('tags'));
-    
+
                 foreach ($tags as $tagName) {
                     $tagName = trim($tagName);
-    
-                    // Create or retrieve the tag
-                    $tag = Tag::firstOrCreate(['name' => $tagName]);
-    
-                    // Attach the tag to the product
-                    $product->tags()->attach($tag);
+
+                    // Ensure that the tag is not empty before creating or attaching
+                    if (!empty($tagName)) {
+                        // Create or retrieve the tag
+                        $tag = Tag::firstOrCreate(['name' => $tagName]);
+
+                        // Attach the tag to the product
+                        $product->tags()->attach($tag);
+                    }
                 }
             }
-    
+
             // Redirect with a success message
             return redirect(route('products.index'))->with('status', 'The product was saved');
         } catch (\Exception $e) {
