@@ -48,27 +48,31 @@ class ProductController extends Controller
     {
         $products = Product::all();
 
-        return view('products.index', compact('products'));
+        return view('products', compact('products'));
     }
 
     public function create()
     {
-        return view('products.create');
+        return view('products');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|unique:products|max:255',
             'description' => 'nullable|string',
         ]);
 
-        Product::create([
-            'name' => $request->input('name'),
-            'description' => $request->input('description'),
-        ]);
+        try {
+            // Create the product if validation passes
+            Product::create($validatedData);
 
-        return redirect(route('products.index'))->with('status', 'The product was saved');
+            // Redirect with a success message
+            return redirect(route('products'))->with('status', 'The product was saved');
+        } catch (\Exception $e) {
+            // Handle any exceptions that may occur during product creation
+            return redirect(route('products'))->with('error', 'An error occurred while saving the product');
+        }
     }
 
     public function destroy(Product $product)
