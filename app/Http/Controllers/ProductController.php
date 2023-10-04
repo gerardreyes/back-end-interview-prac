@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Tag;
 
 /*
  * Changes:
@@ -56,12 +57,28 @@ class ProductController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|unique:products|max:64',
             'description' => 'nullable|string',
+            'tags' => 'nullable|string',
         ]);
 
         try {
             // Create the product if validation passes
-            Product::create($validatedData);
-
+            $product = Product::create($validatedData);
+    
+            // Handle tags
+            if ($request->has('tags')) {
+                $tags = explode(',', $request->input('tags'));
+    
+                foreach ($tags as $tagName) {
+                    $tagName = trim($tagName);
+    
+                    // Create or retrieve the tag
+                    $tag = Tag::firstOrCreate(['name' => $tagName]);
+    
+                    // Attach the tag to the product
+                    $product->tags()->attach($tag);
+                }
+            }
+    
             // Redirect with a success message
             return redirect(route('products.index'))->with('status', 'The product was saved');
         } catch (\Exception $e) {
